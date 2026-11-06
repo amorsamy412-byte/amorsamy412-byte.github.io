@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>استبيان تحليل السوق</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Reem+Kufi:wght@600;700&display=swap">
+<style>
+/* Layout: one narrow column, one section per screen, sticky nav at the bottom. Black on white, sharp corners. */
+:root{
+  --bg:#ffffff;
+  --fg:#0a0a0a;
+  --muted:#5f5f5f;
+  --line:#d6d6d6;
+  --soft:#f3f3f3;
+  --display:"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a0a0a;--fg:#f5f5f5;--muted:#a3a3a3;--line:#3a3a3a;--soft:#171717;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a0a0a;--fg:#f5f5f5;--muted:#a3a3a3;--line:#3a3a3a;--soft:#171717;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+#app{max-width:720px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-block:20px 14px;border-bottom:1px solid var(--fg)}
+.brand{font-family:var(--mono);font-size:12px;letter-spacing:.06em;direction:ltr;unicode-bidi:isolate}
+.stepno{font-size:13px;color:var(--muted)}
+.bar{display:flex;gap:4px;padding-block:12px 0}
+.bar i{flex:1;height:4px;background:var(--line)}
+.bar i.done{background:var(--fg)}
+.bar i.now{background:var(--fg);opacity:.55}
+main{flex:1;padding-block:32px 24px;min-width:0}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);direction:ltr;text-align:right;unicode-bidi:isolate}
+h1,h2{font-family:var(--display);font-weight:700;line-height:1.25;margin:6px 0 14px;text-wrap:balance}
+h1{font-size:clamp(34px,8vw,56px)}
+h2{font-size:clamp(26px,5.5vw,36px)}
+.lead{color:var(--muted);max-width:60ch;margin:0 0 8px}
+.q{padding-block:26px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.qt{font-weight:600;font-size:17px;margin:0 0 4px;max-width:62ch}
+.qn{font-family:var(--mono);font-size:12px;color:var(--muted);margin-inline-end:8px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 12px;max-width:62ch}
+.opts{display:grid;gap:8px;margin-top:12px}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:start;cursor:pointer;
+  font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:11px 14px;
+}
+.opt:hover{border-color:var(--fg)}
+.mk{flex:none;width:18px;height:18px;border:1.5px solid currentColor}
+.opt[role="radio"] .mk{border-radius:50%}
+.opt[aria-checked="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.opt[aria-checked="true"] .mk{background:var(--bg);box-shadow:inset 0 0 0 3px var(--fg)}
+.opt[role="checkbox"][aria-checked="true"] .mk{box-shadow:none;background:var(--bg);position:relative}
+.opt[role="checkbox"][aria-checked="true"] .mk::after{content:"";position:absolute;inset:3px;background:var(--fg)}
+input[type=text],textarea{
+  width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:11px 14px;margin-top:10px;
+}
+textarea{min-height:110px;resize:vertical}
+input[type=text]:focus,textarea:focus,.opt:focus-visible,.btn:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.field label{display:block;font-size:14px;font-weight:500;margin-top:18px}
+.note{margin-top:6px}
+.note summary{cursor:pointer;font-size:14px;color:var(--muted);padding-block:8px}
+nav{
+  position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--fg);
+  display:flex;gap:12px;justify-content:space-between;align-items:center;
+  padding-block:14px calc(14px + env(safe-area-inset-bottom,0px));margin-top:auto;
+}
+.btn{
+  font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--fg);border-radius:2px;padding:12px 26px;
+  background:var(--fg);color:var(--bg);min-width:120px;
+}
+.btn.ghost{background:var(--bg);color:var(--fg)}
+.btn[disabled]{opacity:.35;cursor:default}
+.cnt{font-size:13px;color:var(--muted);text-align:center}
+.out{font-family:var(--mono);font-size:13px;line-height:1.8;min-height:320px;direction:rtl}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.status{font-size:14px;margin-top:12px;min-height:1.6em}
+@media (prefers-reduced-motion:no-preference){.opt{transition:background .12s,color .12s,border-color .12s}}
+body{margin:0}
+</style>
+</head>
+<body>
+<div id="app" dir="rtl" lang="ar">
+  <header class="top">
+    <span class="brand">Amr Samy, Brand Designer</span>
+    <span class="stepno" id="stepno"></span>
+  </header>
+  <div class="bar" id="bar" aria-hidden="true"></div>
+  <main id="view"></main>
+  <nav>
+    <button type="button" class="btn ghost" id="prev">السابق</button>
+    <span class="cnt" id="cnt"></span>
+    <button type="button" class="btn" id="next">التالي</button>
+  </nav>
+</div>
+<script>
+(function(){
+var O=function(t){return {t:t,o:1};};
+var AGES=["أقل من 18 سنة","من 18 إلى 24 سنة","من 25 إلى 34 سنة","من 35 إلى 44 سنة","من 45 إلى 54 سنة","من 55 إلى 64 سنة","65 سنة فأكثر","جميع الفئات العمرية"];
+var S=[
+{id:"s1",title:"خصائص السوق",en:"Market Characteristics",qs:[
+ {id:"1.1",type:"single",q:"ما حجم المنافسة من حيث عدد الشركات والجهات التي تقدم منتجات أو خدمات داخل هذا السوق؟",opts:["عدد محدود من الشركات والجهات.","عدد متوسط.","عدد كبير.","لا تتوفر معلومات كافية."]},
+ {id:"1.2",type:"single",q:"ما طبيعة المنتجات والخدمات التي يقدمها المنافسون داخل السوق؟",opts:["منتجات وخدمات متشابهة إلى حد كبير.","منتجات وخدمات مختلفة لكنها تلبي احتياجات متقاربة.","كل شركة تقدم منتجات أو خدمات مميزة ومختلفة عن الأخرى.","مزيج من الأنواع السابقة."]},
+ {id:"1.3",type:"single",q:"ما مدى سهولة دخول شركات جديدة إلى هذا السوق ومنافستها للشركات الحالية؟",opts:["حواجز دخول منخفضة (سهولة الدخول).","حواجز دخول متوسطة.","حواجز دخول مرتفعة (صعوبة الدخول).","لا تتوفر معلومات كافية."]},
+ {id:"1.4",type:"single",q:"ما طبيعة الطلب على المنتجات أو الخدمات داخل السوق؟",opts:["طلب مستمر ومستقر طوال العام.","طلب موسمي.","طلب متزايد باستمرار.","طلب متذبذب وغير مستقر.","مرتبط بظروف أو أحداث معينة.","لا تتوفر معلومات كافية."]},
+ {id:"1.5",type:"single",q:"ما العامل الأساسي الذي تعتمد عليه المنافسة بين الشركات داخل هذا السوق؟",opts:["السعر والتنافس على تقديم أقل تكلفة.","الجودة والأداء.","الابتكار والتكنولوجيا.","تنوع المنتجات والخدمات.","الثقة والسمعة والخبرة.","التخصص وتقديم حلول محددة.","خدمة العملاء وتجربة الشراء.","مزيج من العوامل السابقة."]}
+]},
+{id:"s2",title:"المنتجات",en:"Products",qs:[
+ {id:"2.1",type:"single",q:"ما طبيعة العملاء المستهدفين بمنتجات الشركة؟",opts:["شركات ومؤسسات (B2B).","أفراد ومستهلكون (B2C).","كلاهما (B2B & B2C)."]},
+ {id:"2.2",type:"single",q:"كيف يمكن تصنيف منتجات الشركة حسب عددها؟",opts:["عدد محدود من المنتجات (يرجى ذكر جميع المنتجات).","عدد متوسط من المنتجات (يرجى ذكر المنتجات أو مجموعاتها الرئيسية).","عدد كبير من المنتجات (يرجى ذكر الفئات الرئيسية فقط)."],note:"اذكر المنتجات أو الفئات هنا"},
+ {id:"2.3",type:"single",q:"ما طبيعة القيمة التي تقدمها منتجات الشركة في السوق؟",opts:["منتجات أساسية تلبي احتياجات أساسية.","منتجات وظيفية تحل مشكلات محددة.","منتجات متخصصة تستهدف احتياجات أو قطاعات معينة.","منتجات فاخرة أو مرتفعة القيمة.","منتجات مبتكرة تقدم حلولًا جديدة.","مزيج من الأنواع السابقة."]},
+ {id:"2.4",type:"single",q:"ما طبيعة العلاقة بين منتجات الشركة وبعضها؟",hint:"اختياري حسب طبيعة الشركة.",opts:["منتجات مستقلة، لكل منها استخدام واحتياج مختلف.","منتجات تخدم احتياجات مختلفة لكنها مترابطة.","منتجات يكمل بعضها بعضًا.","إصدارات أو تنويعات مختلفة من منتج أساسي واحد.","مزيج من الأنواع السابقة."]}
+]},
+{id:"s3",title:"دورة حياة السوق",en:"Market Life Cycle",qs:[
+ {id:"3.1",type:"single",q:"في أي مرحلة من دورة حياة السوق يقع السوق حاليًا؟",opts:["مرحلة التأسيس (Introduction).","مرحلة النمو (Growth).","مرحلة النضج (Maturity).","مرحلة التراجع (Decline).","غير متأكد / لا تتوفر معلومات كافية."]}
+]},
+{id:"s4",title:"تقسيم السوق",en:"Market Segmentation",lead:"التقسيم الديموغرافي (Demographic Segmentation)",qs:[
+ {id:"4.1",type:"multi",q:"ما الفئات العمرية التي تستهدفها الشركة بشكل أساسي؟",hint:"يمكن اختيار أكثر من إجابة.",opts:AGES},
+ {id:"4.2",type:"single",q:"ما الفئة العمرية التي تمثل الجمهور الأساسي والأكثر أهمية بالنسبة للشركة؟",hint:"يرجى اختيار فئة واحدة من الفئات المحددة في السؤال السابق.",opts:AGES},
+ {id:"4.3",type:"single",q:"ما التوزيع التقريبي للجمهور المستهدف من حيث الجنس داخل كل فئة عمرية؟",opts:["أغلبية ذكور.","أغلبية إناث.","توزيع متقارب بين الذكور والإناث.","لا يوجد استهداف محدد حسب الجنس.","غير معروف."],note:"لو يختلف التوزيع من فئة عمرية لأخرى، وضحه هنا"},
+ {id:"4.4",type:"single",q:"ما الحالات الاجتماعية الأكثر شيوعًا بين الجمهور المستهدف داخل كل فئة عمرية؟",opts:["أعزب.","متزوج.","متزوج ولديه أطفال.","مطلق / منفصل.","أرمل.","لا يوجد استهداف محدد حسب الحالة الاجتماعية.","غير معروف."],note:"لو تختلف الحالة من فئة عمرية لأخرى، وضحها هنا"}
+]},
+{id:"s5",title:"الملف التعريفي للعملاء",en:"Customer Profile",qs:[
+ {id:"5.1",type:"multi",q:"ما أهم الاحتياجات التي تدفع العملاء للبحث عن منتجات أو خدمات الشركة؟",opts:["تلبية احتياجات أساسية.","حل مشكلة معينة.","تحسين جودة الحياة أو العمل.","توفير الوقت أو المجهود.","الحصول على تجربة أفضل.","تحقيق مكانة اجتماعية أو مظهر مميز.",O("أسباب أخرى (يرجى التوضيح).")]},
+ {id:"5.2",type:"text",q:"ما أبرز المشكلات أو التحديات التي يواجهها العملاء قبل التعامل مع الشركة؟",hint:"يرجى توضيح أهم المشكلات التي يواجهها العملاء في السوق."},
+ {id:"5.3",type:"multi",q:"ما العوامل التي تحفز العملاء على اتخاذ قرار الشراء؟",opts:["السعر المناسب.","الجودة والموثوقية.","سهولة الاستخدام أو الحصول على المنتج.","الثقة في الشركة وسمعتها.","التوصيات والتقييمات.","التميز والاختلاف.","الحاجة العاجلة.",O("عوامل أخرى.")]},
+ {id:"5.4",type:"text",q:"ما أهم المعايير التي يعتمد عليها العملاء عند المقارنة بين المنتجات أو الشركات المنافسة؟",hint:"يرجى ذكر أهم المعايير من وجهة نظرك."},
+ {id:"5.5",type:"multi",q:"ما أبرز الأسباب التي قد تمنع العملاء من شراء المنتجات أو التعامل مع الشركة؟",opts:["السعر المرتفع.","عدم الثقة أو نقص المعلومات.","وجود بدائل أفضل.","عدم وضوح قيمة المنتج.","صعوبة الوصول أو الشراء.","عدم تلبية المنتج للاحتياجات.","عدم وجود حاجة حالية.",O("أسباب أخرى.")]},
+ {id:"5.6",type:"multi",q:"كيف يتعرف العملاء عادةً على المنتجات أو الشركات المشابهة قبل اتخاذ قرار الشراء؟",opts:["محركات البحث.","منصات التواصل الاجتماعي.","ترشيحات الأصدقاء والمعارف.","الإعلانات.","المعارض والفعاليات.","المتاجر ونقاط البيع.","مواقع المقارنة والمراجعات.",O("قنوات أخرى.")]},
+ {id:"5.7",type:"multi",q:"ما الصفات أو القيم التي يقدّرها العملاء في الشركات والعلامات التجارية التي يفضلون التعامل معها؟",opts:["الثقة والمصداقية.","الجودة والاحترافية.","الابتكار والتجديد.","البساطة وسهولة التعامل.","الفخامة والتميز.","القرب من العملاء وفهم احتياجاتهم.","السعر المناسب والقيمة مقابل المال.",O("أخرى (يرجى التوضيح).")]}
+]},
+{id:"s6",title:"اتجاهات السوق",en:"Market Trends — PESTLE",qs:[
+ {id:"6.1",type:"text",q:"التوجهات السياسية (Political Trends)",hint:"ما أبرز التوجهات أو التغيرات السياسية والحكومية التي تؤثر على السوق الذي تعمل فيه الشركة؟ أمثلة: السياسات الحكومية، الرؤى والاستراتيجيات الوطنية، الإنفاق الحكومي، سياسات الاستيراد والتصدير، والتوجهات الجيوسياسية."},
+ {id:"6.2",type:"text",q:"التوجهات الاقتصادية (Economic Trends)",hint:"ما أبرز التغيرات الاقتصادية التي تؤثر على طبيعة السوق وسلوك الشركات والعملاء؟ أمثلة: التضخم، القوة الشرائية، انتشار أنظمة التقسيط، تغير تكاليف الإنتاج، أسعار المواد الخام، ومعدلات الاستثمار والإنفاق."},
+ {id:"6.3",type:"text",q:"التوجهات الاجتماعية (Social Trends)",hint:"ما أبرز التغيرات في سلوك المجتمع واهتماماته وقيمه التي بدأت تؤثر على الطلب داخل السوق؟ أمثلة: الاهتمام بالصحة النفسية، الوعي الغذائي، تغير أنماط الحياة، الاهتمام بشراء المنتجات المحلية، وتغير العادات الاستهلاكية."},
+ {id:"6.4",type:"text",q:"التوجهات التكنولوجية (Technological Trends)",hint:"ما أبرز التطورات التكنولوجية التي بدأت تؤثر على طريقة عمل الشركات أو تقديم المنتجات والخدمات داخل السوق؟ أمثلة: استخدام الذكاء الاصطناعي، الأتمتة، التجارة الإلكترونية، المدفوعات الرقمية، تقنيات التصنيع الحديثة، والعمل عن بُعد."},
+ {id:"6.5",type:"text",q:"التوجهات القانونية والتشريعية (Legal Trends)",hint:"ما أبرز التغيرات في القوانين والتشريعات واللوائح التنظيمية التي تؤثر على الشركات العاملة في هذا السوق؟ أمثلة: قوانين العمل، حماية الملكية الفكرية، الضرائب، حماية البيانات والخصوصية، معايير الجودة والسلامة، والتراخيص."},
+ {id:"6.6",type:"text",q:"التوجهات البيئية (Environmental Trends)",hint:"ما أبرز التغيرات والتوجهات البيئية التي بدأت تؤثر على قرارات الشركات أو تفضيلات العملاء داخل السوق؟ أمثلة: المنتجات الصديقة للبيئة، التغليف المستدام، إعادة التدوير، تقليل الانبعاثات، كفاءة استهلاك الطاقة، وتقليل النفايات."},
+ {id:"6.7",type:"text",q:"من وجهة نظرك، ما أكثر التوجهات أو التغيرات تأثيرًا على مستقبل السوق خلال السنوات القادمة؟",hint:"يرجى ذكر أهم التوجهات التي تتوقع أن يكون لها تأثير كبير على السوق."}
+]},
+{id:"s7",title:"تحليل المنافسين",en:"Competitor Analysis",qs:[
+ {id:"7.1",type:"text",q:"من هم أبرز المنافسين الذين يقدمون منتجات أو خدمات مشابهة أو بديلة لما تقدمه الشركة؟",hint:"يرجى ذكر أسماء الشركات، مع تصنيف كل منافس إن أمكن: منافسون مباشرون (Direct)، منافسون غير مباشرون (Indirect)، بدائل تنافسية (Substitutes).",big:1},
+ {id:"7.2",type:"single",q:"ما مدى خطورة كل منافس على الشركة من حيث قدرته على جذب نفس العملاء والاستحواذ على حصة من السوق؟",opts:["منافس عالي الخطورة.","منافس متوسط الخطورة.","منافس منخفض الخطورة."],note:"لو تختلف الخطورة من منافس لآخر، اذكر كل منافس وخطورته هنا"},
+ {id:"7.3",type:"text",q:"ما أبرز نقاط القوة والمميزات التنافسية التي يمتلكها كل منافس؟",hint:"أمثلة: قوة العلامة التجارية والسمعة، جودة المنتجات والخدمات، الأسعار، الابتكار والتكنولوجيا، الانتشار والتوزيع، الخبرة والموارد، والعلاقات مع العملاء."},
+ {id:"7.4",type:"text",q:"ما أبرز نقاط الضعف أو أوجه القصور التي تلاحظها لدى المنافسين؟",hint:"أمثلة: ضعف التميز والاختلاف، محدودية المنتجات، ارتفاع الأسعار، ضعف تجربة العملاء، ضعف التواصل، بطء التطوير والابتكار، ومحدودية الانتشار."},
+ {id:"7.5",type:"text",q:"ما الأسباب التي تجعل بعض العملاء يفضلون التعامل مع المنافسين بدلًا من الشركة؟",hint:"أمثلة: أسعار أفضل، جودة أعلى، ثقة وسمعة أقوى، تنوع المنتجات والخدمات، تجربة شراء أفضل، علاقات وشراكات أقوى، أو مميزات غير متوفرة لدى الشركة."},
+ {id:"7.6",type:"text",q:"ما الجوانب التي ترى أن الشركة تستطيع التفوق فيها على منافسيها، أو تقديم قيمة لا يقدمونها بالشكل الكافي؟",hint:"يرجى توضيح الفرص التي يمكن للشركة استغلالها لتقديم قيمة مميزة للعملاء."}
+]}
+];
+
+var KEY="amr-market-survey-v1";
+var st={step:0,ans:{},company:"",person:""};
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==="object"){st.step=p.step|0;st.ans=p.ans||{};st.company=p.company||"";st.person=p.person||"";}}}catch(e){}
+var last=S.length+1; /* 0 intro, 1..7 sections, 8 review */
+if(st.step<0||st.step>last)st.step=0;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+
+function h(tag,attrs){
+  var n=document.createElement(tag);
+  if(attrs){for(var k in attrs){if(k==="class")n.className=attrs[k];else if(k==="text")n.textContent=attrs[k];else n.setAttribute(k,attrs[k]);}}
+  for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;n.appendChild(typeof c==="string"?document.createTextNode(c):c);}
+  return n;
+}
+function getA(q){var a=st.ans[q.id];if(!a){a=st.ans[q.id]=(q.type==="multi"?{v:[],o:"",n:""}:{v:"",o:"",n:""});}return a;}
+function answered(q){
+  var a=st.ans[q.id];if(!a)return false;
+  if(q.type==="multi")return a.v.length>0||!!(a.n&&a.n.trim());
+  return !!(a.v&&String(a.v).trim())||!!(a.n&&a.n.trim());
+}
+function isOther(q,t){for(var i=0;i<q.opts.length;i++){var o=q.opts[i];if(typeof o==="object"&&o.t===t&&o.o)return true;}return false;}
+function label(o){return typeof o==="string"?o:o.t;}
+
+function renderQ(q,idx){
+  var a=getA(q);
+  var box=h("section",{class:"q"});
+  box.appendChild(h("h3",{class:"qt"},h("span",{class:"qn",text:q.id}),q.q));
+  if(q.hint)box.appendChild(h("p",{class:"hint",text:q.hint}));
+  if(q.type==="text"){
+    var ta=h("textarea",{id:"q"+q.id,placeholder:"اكتب إجابتك هنا"});
+    if(q.big)ta.style.minHeight="160px";
+    ta.value=a.v||"";
+    ta.addEventListener("input",function(){a.v=ta.value;save();updCount();});
+    box.appendChild(ta);
+    return box;
+  }
+  var wrap=h("div",{class:"opts",role:q.type==="single"?"radiogroup":"group"});
+  var otherBox=null,otherInput=null;
+  function selected(t){return q.type==="single"?a.v===t:a.v.indexOf(t)>-1;}
+  function sync(){
+    var btns=wrap.querySelectorAll(".opt");
+    for(var i=0;i<btns.length;i++){btns[i].setAttribute("aria-checked",selected(q.opts.map(label)[i])?"true":"false");}
+    var needOther=q.type==="single"?isOther(q,a.v):a.v.some(function(t){return isOther(q,t);});
+    if(otherBox)otherBox.hidden=!needOther;
+  }
+  q.opts.forEach(function(o){
+    var t=label(o);
+    var b=h("button",{type:"button",class:"opt",role:q.type==="single"?"radio":"checkbox","aria-checked":"false"},h("span",{class:"mk"}),h("span",{text:t}));
+    b.addEventListener("click",function(){
+      if(q.type==="single"){a.v=(a.v===t)?"":t;}
+      else{var i=a.v.indexOf(t);if(i>-1)a.v.splice(i,1);else a.v.push(t);}
+      sync();save();updCount();
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);
+  var hasOther=q.opts.some(function(o){return typeof o==="object"&&o.o;});
+  if(hasOther){
+    otherBox=h("div");
+    otherInput=h("input",{type:"text",id:"o"+q.id,placeholder:"اكتب التوضيح هنا"});
+    otherInput.value=a.o||"";
+    otherInput.addEventListener("input",function(){a.o=otherInput.value;save();});
+    otherBox.appendChild(otherInput);
+    box.appendChild(otherBox);
+  }
+  if(q.note){
+    var d=h("details",{class:"note"},h("summary",{text:q.note}));
+    var nt=h("textarea",{id:"n"+q.id,placeholder:"اختياري"});
+    nt.style.minHeight="80px";
+    nt.value=a.n||"";
+    nt.addEventListener("input",function(){a.n=nt.value;save();updCount();});
+    d.appendChild(nt);
+    if(a.n&&a.n.trim())d.open=true;
+    box.appendChild(d);
+  }
+  sync();
+  return box;
+}
+
+function buildText(){
+  var L=[];
+  L.push("استبيان تحليل السوق");
+  L.push("الشركة: "+(st.company.trim()||"—"));
+  L.push("المجيب: "+(st.person.trim()||"—"));
+  var d="";try{d=new Date().toLocaleDateString("ar-EG");}catch(e){d=new Date().toISOString().slice(0,10);}
+  L.push("التاريخ: "+d);
+  S.forEach(function(sec,si){
+    L.push("");L.push("═══ "+(si+1)+". "+sec.title+" ("+sec.en+") ═══");
+    sec.qs.forEach(function(q){
+      var a=st.ans[q.id]||{v:q.type==="multi"?[]:"",o:"",n:""};
+      var val;
+      if(q.type==="text")val=(a.v||"").trim();
+      else if(q.type==="single"){val=a.v||"";if(val&&isOther(q,val)&&a.o&&a.o.trim())val+=" — "+a.o.trim();}
+      else{val=a.v.map(function(t){return (isOther(q,t)&&a.o&&a.o.trim())?t+" ("+a.o.trim()+")":t;}).join(" | ");}
+      L.push("");L.push("س"+q.id+": "+q.q);
+      L.push("ج: "+(val||"—"));
+      if(a.n&&a.n.trim())L.push("ملاحظات: "+a.n.trim());
+    });
+  });
+  return L.join("\n");
+}
+
+var view=document.getElementById("view"),prev=document.getElementById("prev"),next=document.getElementById("next"),
+    cnt=document.getElementById("cnt"),bar=document.getElementById("bar"),stepno=document.getElementById("stepno");
+
+function updCount(){
+  if(st.step>=1&&st.step<=S.length){
+    var qs=S[st.step-1].qs,n=0;qs.forEach(function(q){if(answered(q))n++;});
+    cnt.textContent="تمت الإجابة على "+n+" من "+qs.length;
+  }
+}
+function go(n){st.step=Math.max(0,Math.min(last,n));save();render();window.scrollTo(0,0);}
+
+function render(){
+  view.textContent="";
+  bar.textContent="";
+  for(var i=1;i<=S.length;i++){bar.appendChild(h("i",{class:i<st.step?"done":(i===st.step?"now":"")}));}
+  prev.hidden=st.step===0;
+  next.hidden=false;next.disabled=false;
+  cnt.textContent="";
+  if(st.step===0){
+    stepno.textContent="";
+    view.appendChild(h("div",{class:"kicker",text:"Market Analysis Questionnaire"}));
+    view.appendChild(h("h1",{text:"استبيان تحليل السوق"}));
+    view.appendChild(h("p",{class:"lead",text:"يهدف هذا الاستبيان إلى فهم طبيعة السوق الذي تعمل فيه الشركة، ومنتجاتها، وجمهورها المستهدف، والتغيرات المؤثرة على السوق، والمنافسين. تساعد إجاباتك في تكوين فهم أولي للسوق، يتم استكماله والتحقق منه من خلال البحث والتحليل الاستراتيجي."}));
+    view.appendChild(h("p",{class:"lead",text:"سبعة أقسام، وتستغرق نحو 15 دقيقة. إجاباتك تُحفظ تلقائيًا على هذا الجهاز، فيمكنك الإغلاق والعودة لاحقًا. لا توجد إجابة صحيحة أو خاطئة، ويمكنك ترك أي سؤال لا تعرف إجابته."}));
+    var f=h("div",{class:"field"});
+    f.appendChild(h("label",{for:"company",text:"اسم الشركة"}));
+    var c=h("input",{type:"text",id:"company",placeholder:"اسم الشركة أو الجهة"});c.value=st.company;
+    c.addEventListener("input",function(){st.company=c.value;save();});
+    f.appendChild(c);
+    f.appendChild(h("label",{for:"person",text:"اسمك (اختياري)"}));
+    var p=h("input",{type:"text",id:"person",placeholder:"الاسم والمسمى الوظيفي"});p.value=st.person;
+    p.addEventListener("input",function(){st.person=p.value;save();});
+    f.appendChild(p);
+    view.appendChild(f);
+    next.textContent="ابدأ الاستبيان";
+  }else if(st.step<=S.length){
+    var sec=S[st.step-1];
+    stepno.textContent="القسم "+st.step+" من "+S.length;
+    view.appendChild(h("div",{class:"kicker",text:sec.en}));
+    view.appendChild(h("h2",{text:sec.title}));
+    if(sec.lead)view.appendChild(h("p",{class:"lead",text:sec.lead}));
+    sec.qs.forEach(function(q,i){view.appendChild(renderQ(q,i));});
+    next.textContent=st.step===S.length?"مراجعة وإرسال":"التالي";
+    updCount();
+  }else{
+    stepno.textContent="المراجعة";
+    view.appendChild(h("div",{class:"kicker",text:"Review & Send"}));
+    view.appendChild(h("h2",{text:"راجع إجاباتك وأرسلها"}));
+    view.appendChild(h("p",{class:"lead",text:"اضغط «نسخ الإجابات»، ثم الصقها في رسالة واتساب أو إيميل إلى عمرو سامي. يمكنك الرجوع وتعديل أي قسم قبل النسخ."}));
+    var ta=h("textarea",{id:"out",class:"out",readonly:"readonly"});
+    ta.value=buildText();
+    var status=h("div",{class:"status",role:"status"});
+    var copy=h("button",{type:"button",class:"btn",text:"نسخ الإجابات"});
+    copy.addEventListener("click",function(){
+      var txt=ta.value;
+      function fallback(){
+        ta.focus();ta.select();
+        var ok=false;try{ok=document.execCommand("copy");}catch(e){}
+        status.textContent=ok?"تم النسخ. الصقها الآن في واتساب أو الإيميل وأرسلها لعمرو.":"حدد النص بالأعلى وانسخه يدويًا (تم تحديده لك).";
+      }
+      try{
+        navigator.clipboard.writeText(txt).then(function(){status.textContent="تم النسخ. الصقها الآن في واتساب أو الإيميل وأرسلها لعمرو.";},fallback);
+      }catch(e){fallback();}
+    });
+    ta.addEventListener("focus",function(){ta.select();});
+    var tot=0,done=0;S.forEach(function(s){s.qs.forEach(function(q){tot++;if(answered(q))done++;});});
+    view.appendChild(h("p",{class:"hint",text:"تمت الإجابة على "+done+" من "+tot+" سؤالًا."}));
+    view.appendChild(ta);
+    view.appendChild(h("div",{class:"row"},copy));
+    view.appendChild(status);
+    next.hidden=true;
+  }
+}
+prev.addEventListener("click",function(){go(st.step-1);});
+next.addEventListener("click",function(){go(st.step+1);});
+render();
+})();
+</script>
+</body>
+</html>
